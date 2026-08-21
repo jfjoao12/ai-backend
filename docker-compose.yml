@@ -1,0 +1,16 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17 # Uses Postgres 17 with pgvector pre-installed
+    container_name: pgvector_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${VECTORDB_USER:?VECTORDB_USER is required}
+      POSTGRES_PASSWORD: ${VECTORDB_PASSWORD:?VECTORDB_PASSWORD is required}
+      POSTGRES_DB: ${VECTORDB_NAME:?VECTORDB_NAME is required}
+    ports:
+      - "5532:5432"
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+      
+volumes:
+  pgvector_data:

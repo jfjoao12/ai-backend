@@ -1,9 +1,8 @@
 import { DirectoryLoader } from '@langchain/classic/document_loaders/fs/directory';
 import { TextLoader } from '@langchain/classic/document_loaders/fs/text';
-import { RecursiveCharacterTextSplitter } from '@langchain/classic/text_splitter';
-import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
+import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
+// import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf'; LATER
 
-import prisma from '../lib/prisma-client';
 import { vectorRepository } from './vector-store';
 
 export const INGESTION_CONFIG = {
@@ -21,7 +20,7 @@ export async function ingestDocuments(): Promise<void> {
 
   const loader = new DirectoryLoader(INGESTION_CONFIG.documentsDirectory, {
     '.txt': (path) => new TextLoader(path),
-    '.pdf': (path) => new PDFLoader(path, { splitPages: false }),
+    //'.pdf': (path) => new PDFLoader(path, { splitPages: false }),
   });
 
   const docs = await loader.load();
