@@ -3,9 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AIModule } from './ai/ai.module';
-import { IngestionService } from './ai/ingestion.service';
-import { IngestionController } from './ai/ingestion.controller';
-import { VectorStoreService } from './ai/vector-store.service';
 
 @Module({
   imports: [
@@ -24,4 +21,4 @@ import { VectorStoreService } from './ai/vector-store.service';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

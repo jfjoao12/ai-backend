@@ -2,23 +2,7 @@ import type { BaseChatModel } from '@langchain/core/language_models/chat_models'
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { ChatOllama } from '@langchain/ollama';
 import { requireEnv } from '../../env';
-
-export type ModelProvider = 'google' | 'ollama';
-
-export const MODEL_CONFIG = {
-  google: {
-    model: 'gemini-3-flash-preview',
-    temperature: 0,
-    maxRetries: 2,
-    streaming: true,
-  },
-  ollama: {
-    baseUrl: 'http://localhost:11434',
-    model: 'qwen3:30b-a3b',
-    temperature: 0,
-    numCtx: 16448,
-  },
-} as const;
+import { MODEL_CONFIG, ModelProvider } from '../definitions';
 
 export function getGoogleModelConfig() {
   return {

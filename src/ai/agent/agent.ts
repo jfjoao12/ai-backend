@@ -6,30 +6,10 @@ import {
 } from '@langchain/langgraph';
 import { createAgent } from 'langchain';
 
-import { createChatModel, type ModelProvider } from './model';
+import { createChatModel } from './model';
+import { AGENT_CONFIG, RunAgentOptions, type ModelProvider } from '../definitions';
 import { prompts } from './prompts';
-import { getTools } from './tools';
-
-export const AGENT_CONFIG = {
-  provider: 'google' as const satisfies ModelProvider,
-  encoding: 'text/event-stream' as const,
-  streamMode: [
-    'custom',
-    'values',
-    'updates',
-    'messages',
-  ] satisfies StreamMode[],
-  recursionLimit: 10,
-};
-
-export type AgentInput = Record<string, unknown> & {
-  messages: BaseMessage[];
-};
-
-export type RunAgentOptions = {
-  input: AgentInput;
-  config: LangGraphRunnableConfig;
-};
+import { getTools } from './tools-definitions';
 
 const checkpointer = new MemorySaver();
 

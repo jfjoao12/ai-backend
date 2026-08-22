@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { VectorStoreService } from './vector-store.service';
+import { VectorStoreService } from '../vector-store.service';
 import { DirectoryLoader } from '@langchain/classic/document_loaders/fs/directory';
 import { TextLoader } from '@langchain/classic/document_loaders/fs/text';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
@@ -12,7 +12,7 @@ export const INGESTION_CONFIG = {
 
 @Injectable()
 export class IngestionService {
-  constructor(private readonly vectorStoreService: VectorStoreService) {}
+  constructor(private readonly vectorStoreService: VectorStoreService) { }
 
   async ingestDocuments() {
     console.log('Loading Documents');

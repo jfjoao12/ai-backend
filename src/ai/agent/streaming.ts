@@ -6,13 +6,6 @@ export const toolProgressEventSchema = z
     message: z.string().optional(),
     data: z.record(z.string(), z.unknown()).optional(),
   })
-  .passthrough();
+  .loose();
 
 export const customEventSchema = toolProgressEventSchema;
-
-export type CustomEvent = z.infer<typeof toolProgressEventSchema>;
-
-export type CustomEventWithToolId = CustomEvent & {
-  toolCallId?: string;
-  tool_call_id?: string;
-};
