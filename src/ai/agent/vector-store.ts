@@ -3,21 +3,22 @@ import type { EmbeddingsInterface } from '@langchain/core/embeddings';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { PGVectorStore, type PGVectorStoreArgs } from '@langchain/pgvector';
 import { Pool, type PoolConfig } from 'pg';
+import { requireEnv } from '../../env';
 
 type VectorStoreSchemaConfig = Pick<PGVectorStoreArgs, 'tableName' | 'columns'>;
 
 export const EMBEDDING_CONFIG = {
   model: 'gemini-embedding-001',
-  apiKey: process.env.GOOGLE_API_KEY,
-} as const;
+  apiKey: requireEnv('GOOGLE_API_KEY'),
+};
 
 export const POSTGRES_POOL_CONFIG = {
   host: '127.0.0.1',
-  port: 5432,
-  user: process.env.VECTORDB_USER!,
-  password: process.env.VECTORDB_PASSWORD!,
-  database: process.env.VECTORDB_NAME!,
-} satisfies PoolConfig;
+  port: 5532,
+  user: requireEnv('VECTORDB_USER'),
+  password: requireEnv('VECTORDB_PASSWORD'),
+  database: requireEnv('VECTORDB_NAME'),
+};
 
 export const VECTOR_CONFIG = {
   tableName: 'documents',

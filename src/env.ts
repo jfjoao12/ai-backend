@@ -6,3 +6,13 @@ for (const envFile of ['.env.local', '.env']) {
     loadEnvFile(envFile);
   }
 }
+
+export function requireEnv(name: string): string {
+  const value = process.env[name]?.trim();
+
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+
+  return value;
+}

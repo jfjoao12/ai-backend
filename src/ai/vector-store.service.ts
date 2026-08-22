@@ -1,35 +1,47 @@
-import { PGVectorStore } from "@langchain/pgvector";
-import { Injectable, OnModuleInit, OnModuleDestroy } from "@nestjs/common";
-import { Pool } from "pg";
-import { POSTGRES_POOL_CONFIG, embeddings, VECTOR_CONFIG, VectorDocument } from "./agent/vector-store";
+import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
+import { PGVectorStore } from '@langchain/pgvector';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Pool } from 'pg';
+import { VECTOR_CONFIG, VectorDocument } from './agent/vector-store';
 
 @Injectable()
-export class VectorStoreService
-    implements OnModuleInit, OnModuleDestroy {
-    private readonly pool = new Pool(POSTGRES_POOL_CONFIG);
-    private store!: PGVectorStore;
+export class VectorStoreService implements OnModuleInit, OnModuleDestroy {
+  private store: PGVectorStore | undefined;
 
-    async onModuleInit(): Promise<void> {
-        this.store = await PGVectorStore.initialize(embeddings, {
-            pool: this.pool,
-            dimensions: 3072,
-            ...VECTOR_CONFIG,
-        });
+  constructor(
+    private readonly pool: Pool,
+    private readonly embeddings: GoogleGenerativeAIEmbeddings,
+  ) {}
+
+  async onModuleInit(): Promise<void> {
+    this.store = await PGVectorStore.initialize(this.embeddings, {
+      pool: this.pool,
+      dimensions: 3072,
+      ...VECTOR_CONFIG,
+    });
+  }
+
+  private getStore(): PGVectorStore {
+    if (!this.store) {
+      throw new Error('Vector store has not been initialized!');
     }
 
-    similaritySearch(query: string) {
-        return this.store.similaritySearch(query);
-    }
+    return this.store;
+  }
 
-    async addDocuments(documents: VectorDocument[]): Promise<void> {
-        await this.store.addDocuments(documents);
-    }
+  similaritySearch(query: string) {
+    return this.getStore().similaritySearch(query);
+  }
 
-    async clear(): Promise<void> {
-        await this.pool.query('TRUNCATE TABLE "documents"');
-    }
+  async addDocuments(documents: VectorDocument[]): Promise<void> {
+    await this.getStore().addDocuments(documents);
+  }
 
-    async onModuleDestroy(): Promise<void> {
-        await this.store.end();
-    }
+  async clear(): Promise<void> {
+    await this.pool.query('TRUNCATE TABLE "documents"');
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    await this.store?.end();
+  }
 }

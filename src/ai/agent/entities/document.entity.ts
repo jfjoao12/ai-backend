@@ -1,24 +1,26 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 type DocumentMetadata = Record<string, unknown>;
 
 @Entity()
 export class Document {
-    @PrimaryGeneratedColumn('uuid')
-    id!: string;
+  @PrimaryGeneratedColumn('uuid')
+  declare id: string;
 
-    @Column()
-    content!: string
+  @Column()
+  declare content: string;
 
-    @Column({
-        type: 'jsonb',
-        default: () => "'{}'::jsonb",
-    })
-    metadata!: DocumentMetadata;
+  @Column({ type: 'jsonb' })
+  declare metadata: DocumentMetadata;
 
-    @Column('vector', { length: 3072 })
-    embedding!: number[]
+  @Column('vector', { length: 3072 })
+  declare embedding: number[];
 
-    @CreateDateColumn({ type: 'timestamptz' })
-    createdAt!: Date;
+  @CreateDateColumn()
+  declare createdAt: Date;
 }
