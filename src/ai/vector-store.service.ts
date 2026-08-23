@@ -2,7 +2,7 @@ import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { PGVectorStore } from '@langchain/pgvector';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Pool } from 'pg';
-import { VECTOR_CONFIG, VectorDocument } from './agent/vector-store';
+import { RetrievalResult, VECTOR_CONFIG, VectorDocument } from './definitions';
 
 @Injectable()
 export class VectorStoreService implements OnModuleInit, OnModuleDestroy {
@@ -35,6 +35,18 @@ export class VectorStoreService implements OnModuleInit, OnModuleDestroy {
 
   async addDocuments(documents: VectorDocument[]): Promise<void> {
     await this.getStore().addDocuments(documents);
+  }
+
+  async retrieveDocuments(query: string): Promise<RetrievalResult> {
+    const retrievedDocs = await this.similaritySearch(query);
+    const serialized = retrievedDocs
+      .map(
+        (document) =>
+          `Source ${document.metadata.source}\n: ${document.pageContent}`,
+      )
+      .join('\n');
+
+    return [serialized, retrievedDocs];
   }
 
   async clear(): Promise<void> {

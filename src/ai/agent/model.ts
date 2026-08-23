@@ -4,14 +4,14 @@ import { ChatOllama } from '@langchain/ollama';
 import { requireEnv } from '../../env';
 import { MODEL_CONFIG, ModelProvider } from '../definitions';
 
-export function getGoogleModelConfig() {
+function getGoogleModelConfig() {
   return {
     ...MODEL_CONFIG.google,
     apiKey: requireEnv('GOOGLE_API_KEY'),
   };
 }
 
-export function getOllamaModelConfig() {
+function getOllamaModelConfig() {
   return {
     baseUrl: process.env.OLLAMA_URL ?? MODEL_CONFIG.ollama.baseUrl,
     model: process.env.OLLAMA_CHAT_MODEL ?? MODEL_CONFIG.ollama.model,
@@ -27,7 +27,7 @@ export function createChatModel(provider: ModelProvider): BaseChatModel {
     case 'ollama':
       return new ChatOllama(getOllamaModelConfig());
     default: {
-      const unsupportedProvider: never = provider;
+      const unsupportedProvider: string = provider;
       throw new Error(`Unsupported provider: ${unsupportedProvider}`);
     }
   }

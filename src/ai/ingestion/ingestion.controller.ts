@@ -3,7 +3,7 @@ import { IngestionService } from './ingestion.service';
 
 @Controller('ingestion')
 export class IngestionController {
-  constructor(private readonly ingestionService: IngestionService) { }
+  constructor(private readonly ingestionService: IngestionService) {}
 
   @Post('ingest')
   @HttpCode(HttpStatus.OK)
@@ -12,7 +12,7 @@ export class IngestionController {
       const ingestDocuments = await this.ingestionService.ingestDocuments();
       return ingestDocuments;
     } catch (error) {
-      console.log(`Error in ingestion: ${error}`)
+      console.log(`Error in ingestion: ${error}`);
     }
   }
 }

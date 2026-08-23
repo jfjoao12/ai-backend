@@ -1,12 +1,13 @@
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { Module } from '@nestjs/common';
 import { Pool } from 'pg';
-import { embeddings, POSTGRES_POOL_CONFIG } from './agent/vector-store';
 import { VectorStoreService } from './vector-store.service';
-import { AgentService } from './agent.service';
-import { AiController } from './ai.controller';
+import { AgentService } from './agent/agent.service';
+import { AgentController } from './agent/agent.controller';
 import { IngestionService } from './ingestion/ingestion.service';
 import { IngestionController } from './ingestion/ingestion.controller';
+import { POSTGRES_POOL_CONFIG, embeddings } from './definitions';
+import { AgentToolsService } from './agent/agent-tools.service';
 
 @Module({
   providers: [
@@ -22,8 +23,9 @@ import { IngestionController } from './ingestion/ingestion.controller';
     },
     VectorStoreService,
     IngestionService,
+    AgentToolsService,
     AgentService,
   ],
-  controllers: [AiController, IngestionController],
+  controllers: [IngestionController, AgentController],
 })
-export class AIModule { }
+export class AIModule {}

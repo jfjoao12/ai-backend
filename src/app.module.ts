@@ -19,6 +19,6 @@ import { AIModule } from './ai/ai.module';
     AIModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AIModule],
 })
-export class AppModule { }
+export class AppModule {}

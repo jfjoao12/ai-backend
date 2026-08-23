@@ -12,7 +12,7 @@ export const INGESTION_CONFIG = {
 
 @Injectable()
 export class IngestionService {
-  constructor(private readonly vectorStoreService: VectorStoreService) { }
+  constructor(private readonly vectorStoreService: VectorStoreService) {}
 
   async ingestDocuments() {
     console.log('Loading Documents');
