@@ -1,3 +1,6 @@
+# Keep the existing Compose project and database volume when this folder is renamed.
+name: ai-backend
+
 services:
   db:
     image: pgvector/pgvector:pg17 # Uses Postgres 17 with pgvector pre-installed
