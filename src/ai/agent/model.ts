@@ -15,8 +15,9 @@ function getOllamaModelConfig() {
   return {
     baseUrl: process.env.OLLAMA_URL ?? MODEL_CONFIG.ollama.baseUrl,
     model: process.env.OLLAMA_CHAT_MODEL ?? MODEL_CONFIG.ollama.model,
-    temperature: MODEL_CONFIG.ollama.temperature,
-    numCtx: MODEL_CONFIG.ollama.numCtx,
+    temperature: MODEL_CONFIG.ollama.temperature ?? null,
+    numCtx: MODEL_CONFIG.ollama.numCtx ?? null,
+    think: false, // might disable it later
   };
 }
 

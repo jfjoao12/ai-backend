@@ -43,7 +43,7 @@ export const MODEL_CONFIG = {
 } as const;
 
 export const AGENT_CONFIG = {
-  provider: 'google' as const satisfies ModelProvider,
+  provider: 'ollama' as const satisfies ModelProvider,
   encoding: 'text/event-stream' as const,
   streamMode: [
     'custom',

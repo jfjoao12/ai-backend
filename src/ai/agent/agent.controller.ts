@@ -11,11 +11,13 @@ import type { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { HumanMessage } from '@langchain/core/messages';
 import { AgentService } from './agent.service';
-import { ChatRequestDto } from '../dto/chat-request.dto';
+import { ChatRequestDto, ChatStreamEventDto } from '../dto/chat-request.dto';
+import { AIMessage, AIMessageChunk, ToolMessage } from '@langchain/core/messages';
+import { toolProgressEventSchema } from '../definitions';
 
 @Controller('ai')
 export class AgentController {
-  constructor(private readonly agentService: AgentService) {}
+  constructor(private readonly agentService: AgentService) { }
 
   @Post('chat')
   @HttpCode(HttpStatus.OK)
@@ -26,12 +28,23 @@ export class AgentController {
   ): Promise<void> {
     const threadId = body.threadId ?? randomUUID();
 
+    const send = async (event: ChatStreamEventDto): Promise<void> => {
+      const frame = `data: ${JSON.stringify(event)}\n\n`
+
+      if (!response.write(frame)) {
+        await new Promise<void>((resolve) => {
+          response.once('drain', resolve)
+        })
+      }
+    }
+
     response.set({
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
       'X-Thread-Id': threadId,
     });
+
     // Sends to client immediately before the body
     response.flushHeaders();
 
@@ -58,10 +71,62 @@ export class AgentController {
     request.on('close', abort);
 
     try {
-      for await (const chunk of stream) {
+      for await (const [mode, data] of stream) {
         // Respect backpressure instead of buffering everything in memory.
-        if (!response.write(chunk)) {
-          await new Promise<void>((resolve) => response.once('drain', resolve));
+        // if (!response.write([mode, data])) {
+        //   await new Promise<void>((resolve) => response.once('drain', resolve));
+        // }
+        // if (mode === "updates") {
+        //   console.log("Mode: ", mode)
+        //   console.dir(data, { depth: 3 });
+        // }
+        if (mode === 'messages') {
+          const [message] = data
+
+          if (!AIMessageChunk.isInstance(message)) continue
+
+          for (const block of message.contentBlocks) {
+            if (block.type === "text") {
+              await send({
+                id: message.id!, // LangGraph normally assigns this.
+                type: 'ai_message',
+                message: block.text,
+                status: 'streaming',
+              });
+            }
+
+            if (block.type === 'reasoning') {
+              await send({
+                id: message.id!, // LangGraph normally assigns this.
+                type: 'reasoning_message',
+                message: block.reasoning,
+                status: 'streaming',
+              });
+            }
+          }
+        }
+
+        if (mode === 'custom') {
+          const result = toolProgressEventSchema.safeParse(data);
+
+          if (!result.success) continue;
+
+          const progress = result.data;
+
+          if (
+            progress.type !== 'toolMessageUpdate' ||
+            typeof progress.toolCallId !== 'string' ||
+            typeof progress.message !== 'string'
+          ) {
+            continue;
+          }
+
+          await send({
+            id: progress.toolCallId,
+            type: 'tool_call_message',
+            message: progress.message,
+            status: 'streaming',
+          });
         }
       }
     } catch (error) {

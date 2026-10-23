@@ -15,3 +15,15 @@ export class ChatRequestDto {
   @IsString()
   declare threadId?: string;
 }
+
+export type ChatStreamEventDto = {
+  id: string;
+  type:
+  | 'ai_message'
+  | 'reasoning_message'
+  | 'tool_call_message'
+  | 'tool_result_message'
+  | 'error';
+  message: string;
+  status: 'streaming' | 'finished' | 'error';
+};

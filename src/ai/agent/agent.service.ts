@@ -22,7 +22,7 @@ export class AgentService {
   runAgent(options: RunAgentOptions) {
     return this.graph.stream(options.input, {
       ...options.config,
-      encoding: AGENT_CONFIG.encoding,
+      //encoding: AGENT_CONFIG.encoding,
       streamMode: [...AGENT_CONFIG.streamMode],
       recursionLimit: AGENT_CONFIG.recursionLimit,
     });
