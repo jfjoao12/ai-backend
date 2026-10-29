@@ -14,7 +14,7 @@ export class AgentService {
     this.graph = createAgent({
       model: createChatModel(AGENT_CONFIG.provider),
       tools: this.agentToolService.getTools(),
-      systemPrompt: new SystemMessage(prompts.house),
+      systemPrompt: new SystemMessage(prompts.houseTwo),
       checkpointer: new MemorySaver(),
     });
   }
